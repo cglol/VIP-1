@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 
-import sys
+import base64
+import hashlib
+import hmac
+import json
 import os
+import re
+import sys
+import time
+import urllib.parse
+
+import requests
+
 cur_path = os.path.abspath(os.path.dirname(__file__))
 root_path = os.path.split(cur_path)[0]
 sys.path.append(root_path)
-import requests
-import json
-import traceback
-import time
-import hmac
-import hashlib
-import base64
-import urllib.parse
-from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
-import re
 
 # 通知服务
 BARK = ''                                                                 # bark服务,此参数如果以http或者https开头则判定为自建bark服务; secrets可填;
@@ -27,7 +26,8 @@ TG_PROXY_IP = ''                                                          # tg�
 TG_PROXY_PORT = ''                                                        # tg机器人的TG_PROXY_PORT; secrets可填
 DD_BOT_TOKEN = ''                                                         # 钉钉机器人的DD_BOT_TOKEN; secrets可填
 DD_BOT_SECRET = ''                                                        # 钉钉机器人的DD_BOT_SECRET; secrets可填
-QYWX_AM = ''                                                              # 企业微信应用的QYWX_AM; secrets可填 参考http://note.youdao.com/s/HMiudGkb
+# 企业微信应用的QYWX_AM; secrets可填 参考http://note.youdao.com/s/HMiudGkb
+QYWX_AM = ''
 
 notify_mode = []
 
@@ -61,6 +61,7 @@ if QYWX_AM:
     notify_mode.append('qywxapp_bot')
     print("企业微信应用 推送打开")
 
+
 def bark(title, content):
     print("\n")
     if not BARK:
@@ -69,14 +70,15 @@ def bark(title, content):
     print("bark服务启动")
     url = None
     if BARK.startswith('http'):
-      url = f"""{BARK}/{title}/{content}"""
+        url = f"""{BARK}/{title}/{content}"""
     else:
-      url = f"""https://api.day.app/{BARK}/{title}/{content}"""
+        url = f"""https://api.day.app/{BARK}/{title}/{content}"""
     response = requests.get(url).json()
     if response['code'] == 200:
         print('推送成功！')
     else:
         print('推送失败！')
+
 
 def serverJ(title, content):
     print("\n")
@@ -94,6 +96,7 @@ def serverJ(title, content):
     else:
         print('推送失败！')
 
+
 def telegram_bot(title, content):
     print("\n")
     bot_token = TG_BOT_TOKEN
@@ -102,7 +105,7 @@ def telegram_bot(title, content):
         print("tg服务的bot_token或者user_id未设置!!\n取消推送")
         return
     print("tg服务启动")
-    url=f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     payload = {'chat_id': str(TG_USER_ID), 'text': f'{title}\n\n{content}', 'disable_web_page_preview': 'true'}
     proxies = None
@@ -114,6 +117,7 @@ def telegram_bot(title, content):
         print('推送成功！')
     else:
         print('推送失败！')
+
 
 def dingding_bot(title, content):
     timestamp = str(round(time.time() * 1000))  # 时间戳
@@ -135,6 +139,7 @@ def dingding_bot(title, content):
     else:
         print('推送失败！')
 
+
 def qywxapp_bot(title, content):
     print("\n")
     if not QYWX_AM:
@@ -142,8 +147,8 @@ def qywxapp_bot(title, content):
         return
     print("企业微信应用启动")
     qywx_app_params = QYWX_AM.split(',')
-    url='https://qyapi.weixin.qq.com/cgi-bin/gettoken'
-    headers= {
+    url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken'
+    headers = {
         'Content-Type': 'application/json',
     }
     payload = {
@@ -195,7 +200,7 @@ def qywxapp_bot(title, content):
             }
         }
 
-    url=f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={accesstoken}"
+    url = f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={accesstoken}"
     data = {
         'touser': f'{change_user_id(content)}',
         'agentid': f'{qywx_app_params[3]}',
@@ -212,6 +217,7 @@ def qywxapp_bot(title, content):
     else:
         print('推送失败！')
 
+
 def change_user_id(desp):
     qywx_app_params = QYWX_AM.split(',')
     if qywx_app_params[2]:
@@ -227,6 +233,7 @@ def change_user_id(desp):
         return userId
     else:
         return "@all"
+
 
 def send(title, content):
     """
@@ -268,6 +275,7 @@ def send(title, content):
             continue
         else:
             print('此类推送方式不存在')
+
 
 def main():
     send('title', 'content')

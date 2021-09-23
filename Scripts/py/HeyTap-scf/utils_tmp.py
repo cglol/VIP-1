@@ -7,7 +7,7 @@ expired_act_list = [
      'lid': 1516,
      'draw_times': 3,
      'end_time': '2021-8-18 23:59:59',
-     'text':'每次扣取5积分'
+     'text': '每次扣取5积分'
      },
     {'act_name': 'realme积分大乱斗1', 'aid': 1582,
      'if_task': True,
@@ -17,7 +17,7 @@ expired_act_list = [
      'lid': 1466,
      'draw_times': 3,
      'end_time': '2021-8-31 23:59:59',
-     'text':'每次扣取10积分'
+     'text': '每次扣取10积分'
      },
     {'act_name': 'realme积分大乱斗2', 'aid': 1598,
      'if_task': True,
@@ -27,7 +27,7 @@ expired_act_list = [
      'lid': 1487,
      'draw_times': 3,
      'end_time': '2021-8-31 23:59:59',
-     'text':'每次扣取10积分'
+     'text': '每次扣取10积分'
      },
     {'act_name': 'realme宠粉计划1', 'aid': 1182,
      'if_task': False,  # 该活动没有任务
@@ -37,7 +37,7 @@ expired_act_list = [
      'lid': 1347,
      'draw_times': 1,
      'end_time': '2021-8-31 23:59:59',
-     'text':'每次扣取10积分'
+     'text': '每次扣取10积分'
      },
     {'act_name': 'realme宠粉计划2', 'aid': 1616,
      'if_task': False,  # 该活动没有任务
@@ -57,7 +57,7 @@ expired_act_list = [
      'lid': 1482,
      'draw_times': 3,
      'end_time': '2021-8-18 23:59:59',  # 8-8过期，预计过期还能玩，延期几天
-     'text':'每次扣取10积分'
+     'text': '每次扣取10积分'
      },
     {'act_name': '天天积分翻倍', 'aid': 675,
      'if_task': False,  # 该活动没有任务
@@ -67,7 +67,7 @@ expired_act_list = [
      'lid': 1289,
      'draw_times': 3,
      'end_time': '2033-8-18 23:59:59',  # 长期任务
-     'text':'每次扣取10积分'
+     'text': '每次扣取10积分'
      },
     {'act_name': '智能生活', 'aid': 1270,  # 从原作者代码提取，但是没找到活动页面在哪，暂不提供抽奖
      'if_task': False,  # 该活动没有任务
@@ -86,7 +86,7 @@ expired_act_list = [
      'lid': 1514,
      'draw_times': 3,
      'end_time': '2021-8-18 23:59:59',  # 活动8-5结束，实际还能玩
-     'text':'每次扣取0积分'
+     'text': '每次扣取0积分'
      },
 ]
 
@@ -101,6 +101,6 @@ act_list = [
      'lid': 1307,  # 抽奖参数
      'draw_times': 3,  # 控制抽奖次数
      'end_time': '2033-8-18 23:59:59',  # 长期任务
-     'text':'每次扣取0积分'
+     'text': '每次扣取0积分'
      },
 ]

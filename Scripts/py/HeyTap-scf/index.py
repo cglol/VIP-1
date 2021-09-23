@@ -3,19 +3,20 @@
 import json
 import os
 import re
-import requests
-import sys
 import time
 import traceback
-import utils_tmp
+
+import requests
+
 import notify
+import utils_tmp
 
 
 class Heytap:
     def __init__(self, config):
         self.client = None
         self.session = requests.session()
-        self.login = config['HEYTAP_COOKIE_LIST']
+        self.login = config['HEYTAP']
         self.log = ''
         self.config = config
         self.HT_cookies = 'cookie'
@@ -29,8 +30,8 @@ class Heytap:
         self.act_task = utils_tmp.act_list  # 修改为从文件获取，避免更新代码后丢失原有活动配置
         self.if_draw = False  # 初始化设置为False，会从配置文件获取实际设置
 
-
     # 获取cookie里的一些参数，部分请求需要使用到————hss修改
+
     def get_cookie_data(self):
         try:
             app_param = re.findall('app_param=(.*?)}', self.HT_cookies)[0] + '}'
@@ -46,8 +47,8 @@ class Heytap:
             self.s_channel = 'ios_oppostore'
             self.source_type = '505'
 
-
     # 获取个人信息，判断登录状态
+
     def get_user_info(self):
         flag = False
         headers = {
@@ -83,8 +84,8 @@ class Heytap:
         else:
             return False
 
-
     # 任务中心列表，获取任务及任务状态
+
     def taskCenter(self):
         headers = {
             'Host': 'store.oppo.com',
@@ -101,9 +102,9 @@ class Heytap:
         res1 = res1.json()
         return res1
 
-
     # 每日签到
     # 位置: APP → 我的 → 签到
+
     def daily_bonus(self):
         try:
             dated = time.strftime("%Y-%m-%d")
@@ -163,9 +164,9 @@ class Heytap:
             self.log += '【每日签到】：错误，原因为: ' + str(e) + '\n'
             print('【每日签到】：错误，原因为: ' + str(e) + '\n')
 
-
     # 浏览商品 10个sku +20 分
     # 位置: APP → 我的 → 签到 → 每日任务 → 浏览商品
+
     def daily_viewgoods(self):
         try:
             headers = {
@@ -223,7 +224,6 @@ class Heytap:
             self.log += '【每日浏览任务】: 错误，原因为: ' + str(e) + '\n'
             print('【每日浏览任务】: 错误，原因为: ' + str(e) + '\n')
 
-
     def daily_sharegoods(self):
         try:
             headers = {
@@ -271,7 +271,6 @@ class Heytap:
             print(traceback.format_exc())
             self.log += '【每日分享商品】：错误，原因为: ' + str(e) + '\n'
             print('【每日分享商品】：错误，原因为: ' + str(e) + '\n')
-
 
     def daily_viewpush(self):
         try:
@@ -321,8 +320,8 @@ class Heytap:
             self.log += '【每日推送消息】: 错误，原因为: ' + str(e) + '\n'
             print('【每日推送消息】: 错误，原因为: ' + str(e) + '\n')
 
-
     # 执行完成任务领取奖励
+
     def cashingCredits(self, info_marking, info_type, info_credits):
         headers = {
             'Host': 'store.oppo.com',
@@ -339,15 +338,16 @@ class Heytap:
             'referer': 'https://store.oppo.com/cn/app/taskCenter/index?us=gerenzhongxin&um=hudongleyuan&uc=renwuzhongxin'
         }
         data = "marking=" + str(info_marking) + "&type=" + str(info_type) + "&amount=" + str(info_credits)
-        res = self.client.post('https://store.oppo.com/cn/oapi/credits/web/credits/cashingCredits', data=data, headers=headers)
+        res = self.client.post('https://store.oppo.com/cn/oapi/credits/web/credits/cashingCredits',
+                               data=data, headers=headers)
         res = res.json()
         if res['code'] == 200:
             return True
         else:
             return False
 
-
     # 活动平台抽奖通用接口
+
     def lottery(self, datas, referer='', extra_draw_cookie=''):
         headers = {
             "referer": referer,
@@ -361,8 +361,8 @@ class Heytap:
         res = res.json()
         return res
 
-
     # 活动平台完成任务接口
+
     def task_finish(self, aid, t_index):
         headers = {
             'Accept': 'application/json, text/plain, */*;q=0.01',
@@ -379,8 +379,8 @@ class Heytap:
         res = res.json()
         return res
 
-
     # 活动平台领取任务奖励接口
+
     def task_award(self, aid, t_index):
         headers = {
             'Accept': 'application/json, text/plain, */*;q=0.01',
@@ -397,8 +397,8 @@ class Heytap:
         res = res.json()
         return res
 
-
     # 做活动任务和抽奖通用接口————hss修改
+
     def doTask_and_draw(self):
         for act_list in self.act_task:
             act_name = act_list['act_name']
@@ -475,9 +475,9 @@ class Heytap:
                 self.log += f'【{act_name}】：活动已结束，不再执行\n'
                 print(f'【{act_name}】：活动已结束，不再执行\n')
 
-
     # 暂时保留，aid和我抓取的不一致
     # realme宠粉计划-幸运抽奖-转盘
+
     def realme_lottery(self):
         data = "aid=1182&lid=1429&mobile=&authcode=&captcha=&isCheck=0&source_type=505&s_channel=ios_oppostore&sku=&spu="
         res = self.lottery(data)
@@ -491,8 +491,8 @@ class Heytap:
         print('【realme宠粉计划转盘】获得：' + str(goods_name) + '\n')
         time.sleep(3)
 
-
     # 早睡打卡
+
     def zaoshui_task(self):
         try:
             headers = {
@@ -551,7 +551,8 @@ class Heytap:
                 print('【早睡打卡记录】\n')
                 i = 0
                 for data in record:
-                    self.log += data['everydayDate'] + "——" + data['applyClockInStatus'] + "——" + data['credits'] + '\n'
+                    self.log += data['everydayDate'] + "——" + \
+                        data['applyClockInStatus'] + "——" + data['credits'] + '\n'
                     print(data['everydayDate'] + "——" + data['applyClockInStatus'] + '——' + data['credits'] + '\n')
                     i += 1
                     if i == 4:  # 最多显示最近2条记录
@@ -561,13 +562,13 @@ class Heytap:
             self.log += '【早睡打卡】\n错误，原因为: ' + str(e) + '\n'
             print('【早睡打卡】: 错误，原因为: ' + str(e) + '\n')
 
-
     # 主程序
+
     def main(self):
         i = 1
         for config in self.login:
-            self.HT_cookies = config['cookies']
-            self.HT_UserAgent = config['UserAgent']
+            self.HT_cookies = config['cookie']
+            self.HT_UserAgent = config['useragent']
             self.if_draw = config['if_draw']
             self.client = self.get_user_info()
             if self.client:
@@ -588,12 +589,14 @@ class Heytap:
             self.log += '\n\n'
         return self.log
 
+
 def main_handler(event, context):
     with open(os.path.join(os.path.dirname(__file__), "check.json"), "r", encoding="utf-8") as f:
         cf = json.loads(f.read())
     res = Heytap(cf).main()
     print(res)
     notify.send('欢太商城', res)
+
 
 # 主函数入口，支持云函数
 if __name__ == '__main__':
