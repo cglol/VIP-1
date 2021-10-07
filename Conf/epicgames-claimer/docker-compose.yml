@@ -10,6 +10,7 @@ services:
       - AUTO_UPDATE=false
       - EMAIL=邮箱
       - PASSWORD=密码
+      - PUSH_SERVERCHAN_SENDKEY=SCKEY
     volumes:
       - $PWD/User_Data:/User_Data
   # epic-b:
@@ -21,5 +22,6 @@ services:
       # - AUTO_UPDATE=false
       # - EMAIL=另一个邮箱
       # - PASSWORD=另一个密码
+      # - PUSH_SERVERCHAN_SENDKEY=SCKEY
     # volumes:
       # - $PWD/User_Data:/User_Data
