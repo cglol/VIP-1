@@ -1,13 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # 原作者不知道
-from telethon import TelegramClient, events, sync
+import asyncio
+import re
 
 import httpx
-import time
-import json
-import re
-import asyncio
+from telethon import TelegramClient, events
 
 # 三个地方需要修改，分别是22行的api_id、23行的api_hash、25行的cks，运行后首先输入手机号码，记得+86，然后输入Telegram发送的验证码，就可以监控频道并领取京豆了。测试方法：取消注释79行，往群里发送(https://api.m.jd.com)，要带括号，有输出就没问题了
 
@@ -19,7 +17,7 @@ import asyncio
 # These example values won't work. You must get your own api_id and
 # api_hash from https://my.telegram.org, under API Development.
 # 必须填写 api_id api_hash proxy
-api_id = 
+api_id = ''
 api_hash = ''
 # cookies中间用&分开
 cks = ""
@@ -44,10 +42,8 @@ async def send_live(cks, url):
                 await asyncio.sleep(0.5)
 
 
-
-
 # 使用代理proxy
-#client = TelegramClient('test', api_id, api_hash, proxy=("http", '34.92.63.71', 8101))
+# client = TelegramClient('test', api_id, api_hash, proxy=("http", '34.92.63.71', 8101))
 # 不使用代理
 client = TelegramClient('test', api_id, api_hash)
 
@@ -75,19 +71,19 @@ async def main():
 
 p1 = re.compile(r'[(](https://api\.m\.jd\.com.*?)[)]', re.S)
 
-#@client.on(events.NewMessage)
-#@client.on(events.NewMessage(chats=[-1001479368440]))# 群
-#@client.on(events.NewMessage(chats=[-1001197524983]))# 频道
-@client.on(events.NewMessage(chats=[-1001173715142]))#自己
+# @client.on(events.NewMessage)
+# @client.on(events.NewMessage(chats=[-1001479368440]))# 群
+# @client.on(events.NewMessage(chats=[-1001197524983]))# 频道
+
+
+@client.on(events.NewMessage(chats=[-1001173715142]))  # 自己
 async def my_event_handler(event):
-    #print(event.raw_text)
-        print(event.message.sender_id,event.message.text)
-        # if event.message.sender_id == '1663824060':
-        sec = re.findall(p1, event.message.text)
-        if sec!=None:
-            await send_live(cks,sec[0])
-
-
+    # print(event.raw_text)
+    print(event.message.sender_id, event.message.text)
+    # if event.message.sender_id == '1663824060':
+    sec = re.findall(p1, event.message.text)
+    if sec is not None:
+        await send_live(cks, sec[0])
 
 
 with client:

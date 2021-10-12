@@ -1,3 +1,8 @@
+import json
+import os
+import re
+import time
+
 '''
 Author: Chiupam (https://t.me/chiupam)
 version: 0.1.5
@@ -32,16 +37,14 @@ update: 1. 删除读取 bot.json 的函数，把原先的功能写进 main() 函
     1. 切勿删除、泄露 config 目录下的 session.txt 密令文件！
     2. 目前仅支持 v4-bot 且已将个人的 api 填入 bot.json 文件内的用户使用！https://my.telegram.org/
 '''
-import os, re, json, time
 
-
-count = 2 # 此部分参考了 178.py
+count = 2  # 此部分参考了 178.py
 while count:
     try:
-        from telethon import TelegramClient, events, connection
+        from telethon import TelegramClient, events
         from telethon.sessions import StringSession
         break
-    except:
+    except Exception:
         if count == 2:
             pip = 'pip3'
         else:
@@ -55,7 +58,7 @@ while count:
     try:
         import requests
         break
-    except:
+    except Exception:
         if count == 2:
             pip = 'pip3'
         else:
@@ -76,7 +79,7 @@ def findCookie(docker_file_path):
             # code = re.findall(r'"(.*?)"', line, re.DOTALL) # 获取的 cookie 字符串（列表、单元素）
             # if code != []: # 非空元素
             with open(cookie_file, 'a', encoding='utf-8') as f2:
-                print(cookie[0], file=f2, end='&') # 写入 cookie 字符串（字符串）
+                print(cookie[0], file=f2, end='&')  # 写入 cookie 字符串（字符串）
     cookie_file = f'{docker_file_path}/config/cookie.txt'
     with open(cookie_file, 'r', encoding='utf-8') as f:
         cookie_list = f.readline().split('&')[:-1]
@@ -87,7 +90,7 @@ def findCookie(docker_file_path):
 def obtainSession(docker_file_path, api_id, api_hash):
     with TelegramClient(StringSession(), api_id, api_hash) as client:
         with open(f'{docker_file_path}/config/session.txt', 'w', encoding='utf-8') as f:
-            print(f'请输入手机号（带国家代码）和验证码登录以获取、写入密令')
+            print('请输入手机号（带国家代码）和验证码登录以获取、写入密令')
             print(client.session.save(), file=f)
             print(f'写入密令后请不要删除、泄露 {docker_file_path}/session.txt 文件')
 
@@ -115,7 +118,7 @@ def getBean(url, Referer):
                         redWord = res['result']['alreadyReceivedGifts'][i]['redWord']
                         rearWord = res['result']['alreadyReceivedGifts'][i]['rearWord']
                         getBean_log = f"京东账号{i + 1}\n获得 {redWord} {rearWord}"
-                except:
+                except Exception:
                     giftsToast = res['result']['giftsToast'].split(" \n ")[1]
                     getBean_log = f"京东账号{i + 1}\n获得 {giftsToast}"
             elif followDesc.find('已经') != -1:
@@ -134,7 +137,7 @@ def accountBean(docker_file_path):
     for line in f:
         bean_account_line = re.findall(r'获得 [0-9]{2} 京豆', line, re.DOTALL)
         if bean_account_line != []:
-            bean_account = int(re.findall(r"\d{2,}",bean_account_line[0])[0])
+            bean_account = int(re.findall(r"\d{2,}", bean_account_line[0])[0])
             return bean_account
         if line.find("'code': '1'") != -1:
             return 20
@@ -143,7 +146,7 @@ def accountBean(docker_file_path):
 # 把获得大于 10 京豆的奖励推送到 Telegram Bot
 def tgBot(docker_file_path, user_id, bot_token, tg_notify):
     bean_account = accountBean(docker_file_path)
-    if bean_account == None:
+    if bean_account is None:
         os.remove(f'{docker_file_path}/log/send.txt')
         return
     elif tg_notify and bean_account >= 10:
@@ -179,10 +182,10 @@ def main(docker_file_path, Referer, tg_notify):
         proxy_type = bot_set['proxy_type']
         proxy_add = bot_set['proxy_add']
         proxy_port = bot_set['proxy_port']
-        try: # 兼容旧版本 bot.json （小丑竟是我自己）
+        try:  # 兼容旧版本 bot.json （小丑竟是我自己）
             proxy_user = bot_set['proxy_user']
             proxy_password = bot_set['proxy_password']
-        except:
+        except Exception:
             if proxy:
                 print("检测到 bot.json 使用了旧模板，建议使用新的模板")
     if not os.path.isfile(f'{docker_file_path}/config/bot.json'):
@@ -211,7 +214,8 @@ def main(docker_file_path, Referer, tg_notify):
     regex = re.compile(r'[(](https://api\.m\.jd\.com.*?)[)]', re.S)
     # @client.on(events.NewMessage(chats=[-1001425653276])) # 监控我个人的测试频道（他人不要取消注释此行）
     # @client.on(events.NewMessage(chats=[channel_id], from_users=[user_id])) # 监控群组某人
-    @client.on(events.NewMessage(chats=[-1001197524983])) # 监控布道场频道
+
+    @client.on(events.NewMessage(chats=[-1001197524983]))  # 监控布道场频道
     async def my_event_handler(event):
         url = re.findall(regex, event.message.text)
         if url != []:
@@ -225,6 +229,6 @@ def main(docker_file_path, Referer, tg_notify):
 if __name__ == '__main__':
     file_path_list = os.path.realpath(__file__).split('/')[1:]
     docker_file_path = '/' + '/'.join(file_path_list[:-2])
-    Referer = '' # 当你需要时，请注释第 98、105 行，并在第 227 行填入对应的链接（正确的链接要求含有 wx483 字符串）
-    tg_notify = True # 默认开启 TgBot 推送功能，当你需要取消时，请把 True 改为 False
+    Referer = ''  # 当你需要时，请注释第 98、105 行，并在第 227 行填入对应的链接（正确的链接要求含有 wx483 字符串）
+    tg_notify = True  # 默认开启 TgBot 推送功能，当你需要取消时，请把 True 改为 False
     main(docker_file_path, Referer, tg_notify)

@@ -3,11 +3,12 @@
 # by 'hollowman6' from Lanzhou University(兰州大学)
 # modified by Oreo
 
+import json
 import os
 import re
-import json
-import requests
 import urllib.parse
+
+import requests
 
 sckey = os.getenv('PUSH_KEY')
 pptoken = os.getenv('PUSH_PLUS_TOKEN')
@@ -24,6 +25,7 @@ errorNotify = ""
 if not title:
     raise Exception("未设置 `TITLE[name]` Actions Secret!")
 
+
 def exwechat_get_access_token():
     url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken'
     params = {
@@ -37,6 +39,7 @@ def exwechat_get_access_token():
         return resp_json['access_token']
     else:
         raise Exception('请检查CORPID和CORPSECRET是否正确！\n' + resp.text)
+
 
 def exwechat_get_ShortTimeMedia(img_url):
     if img_url:
@@ -82,13 +85,14 @@ def exwechat_send(title, digest, content):
     resp.raise_for_status()
     return resp
 
+
 if sckey:
     try:
         host = "https://sctapi.ftqq.com/"
         title = urllib.parse.quote_plus(title.replace('\n', '\n\n'))
         message = urllib.parse.quote_plus(message.replace('\n', '\n\n'))
         res = requests.get(host + sckey + ".send?title=" + title +
-                            "&desp=" + message)
+                           "&desp=" + message)
         result = json.loads(res.text)
         if result['data']['errno'] == 0:
             print("Server酱推送成功!")
@@ -113,7 +117,7 @@ if pptoken:
         title = urllib.parse.quote_plus(title.replace('\n', '<br>'))
         message = urllib.parse.quote_plus(message.replace('\n', '<br>'))
         res = requests.get(host + "send?token=" + pptoken + "&title=" + title +
-                            "&content=" + message + "&template=html&topic=" + pptopic)
+                           "&content=" + message + "&template=html&topic=" + pptopic)
         result = res.json()
         if result['code'] == 200:
             print("成功通过PushPlus将结果通知给相关用户!")

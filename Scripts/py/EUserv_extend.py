@@ -1,6 +1,12 @@
 # -*- coding: utf8 -*-
-import os, re, json, time, requests
+import json
+import os
+import re
+import time
+
+import requests
 from bs4 import BeautifulSoup
+
 '''
 Author: cokemine
 Modifier: o0oo0ooo0 & Oreo
@@ -100,7 +106,7 @@ def get_servers(sess_id: str, session: requests.session) -> {}:
         if not len(server_id) == 1:
             continue
         flag = True if tr.select('.td-z1-sp2-kc .kc2_order_action_container')[
-                           0].get_text().find('Contract extension possible from') == -1 else False
+            0].get_text().find('Contract extension possible from') == -1 else False
         d[server_id[0].get_text()] = flag
     return d
 
@@ -248,7 +254,7 @@ def main_handler(event, context):
         time.sleep(15)
         check(sessid, s)
         time.sleep(5)
-    
+
     # 防止 config.sh export TG_API_HOST="" 的情况
     global TG_API_HOST
     if TG_API_HOST == "":

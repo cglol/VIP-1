@@ -11,19 +11,23 @@ airport_user: 签到机场登陆邮箱，与网站对应，多个用户用英文
 airport_pwd: 签到机场登陆密码，与网站对应，多个密码用英文逗号分割
 通知变量参考 https://raw.githubusercontent.com/whyour/qinglong/master/sample/notify.py
 '''
-import requests, re, os
+import os
+
+import requests
 
 requests.packages.urllib3.disable_warnings()
+
 
 def qlnotify(desp):
     cur_path = os.path.abspath(os.path.dirname(__file__))
     if os.path.exists(cur_path + "/notify.py"):
         try:
             from notify import send
-        except:
+        except Exception:
             print("加载通知服务失败~")
         else:
             send('机场签到', desp)
+
 
 class SspanelQd(object):
     def __init__(self):
@@ -46,9 +50,9 @@ class SspanelQd(object):
             session = requests.session()
 
             try:
-                #以下except都是用来捕获当requests请求出现异常时，
+                # 以下except都是用来捕获当requests请求出现异常时，
                 # 通过捕获然后等待网络情况的变化，以此来保护程序的不间断运行
-                session.get(self.base_url[i], verify=False)  
+                session.get(self.base_url[i], verify=False)
 
             except requests.exceptions.ConnectionError:
                 msg = self.base_url[i] + '\n\n' + '网络不通'
@@ -59,8 +63,8 @@ class SspanelQd(object):
                 msg = self.base_url[i] + '\n\n' + '分块编码错误'
                 msgall = msgall + self.base_url[i] + '\n\n' + msg + '\n\n'
                 print(msg)
-                continue   
-            except:
+                continue
+            except Exception:
                 msg = self.base_url[i] + '\n\n' + '未知错误'
                 msgall = msgall + self.base_url[i] + '\n\n' + msg + '\n\n'
                 print(msg)
@@ -83,7 +87,7 @@ class SspanelQd(object):
 
             response = session.post(self.base_url[i] + '/user/checkin', headers=headers, verify=False)
             msg = (response.json()).get('msg')
-            
+
             msgall = msgall + self.base_url[i] + '\n\n' + msg + '\n\n'
             print(msg)
 
@@ -97,9 +101,12 @@ class SspanelQd(object):
         qlnotify(msg)
 
 # 云函数入口
+
+
 def main_handler(event, context):
     run = SspanelQd()
     run.main()
+
 
 if __name__ == '__main__':
     run = SspanelQd()

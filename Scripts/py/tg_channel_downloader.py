@@ -1,15 +1,16 @@
 # !/usr/bin/env python3
+import asyncio
+import asyncio.subprocess
 import difflib
+import logging
 import os
 import re
 import time
-import asyncio
-import asyncio.subprocess
-import logging
-from telethon import TelegramClient, events, errors
+
+from telethon import TelegramClient, errors, events
 from telethon.tl.types import MessageMediaWebPage
 
-#***********************************************************************************#
+# *********************************************************************************** #
 api_id = 1234567   # your telegram api id
 api_hash = '1234567890abcdefgh'  # your telegram api hash
 bot_token = '1234567890:ABCDEFGHIJKLMNOPQRST'  # your bot_token
@@ -23,10 +24,10 @@ max_num = 5  # 同时下载数量
 filter_list = ['你好，欢迎加入 Quantumu', '\n']
 # filter chat id /指定某些频道下载
 whitelist = []
-donwload_all_chat = False # 监控所有你加入的频道，收到的新消息如果包含媒体都会下载，默认关闭
-filter_file_name = ['sh'] # 指定文件后缀，可以填jpg、avi、mkv、rar等。
+donwload_all_chat = False  # 监控所有你加入的频道，收到的新消息如果包含媒体都会下载，默认关闭
+filter_file_name = ['sh']  # 指定文件后缀，可以填jpg、avi、mkv、rar等。
 # pip install telethon cryptg pillow aiohttp hachoir # 所需的依赖模块
-#***********************************************************************************#
+# *********************************************************************************** #
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.WARNING)
@@ -124,7 +125,7 @@ async def worker(name):
             if upload_file_set:
                 try:
                     os.remove(os.path.join(file_save_path, file_name))
-                except:
+                except Exception:
                     pass
 
 
@@ -143,7 +144,7 @@ async def handler(update):
             chat_title = entity.title
             offset_id = 0
             await update.reply(f'开始从{chat_title}的第一条消息下载。')
-        except:
+        except Exception:
             await update.reply('chat输入错误，请输入频道或群组的链接')
             return
     elif len(text) == 3:
@@ -153,7 +154,7 @@ async def handler(update):
             entity = await client.get_entity(chat_id)
             chat_title = entity.title
             await update.reply(f'开始从{chat_title}的第{offset_id}条消息下载。')
-        except:
+        except Exception:
             await update.reply('chat输入错误，请输入频道或群组的链接')
             return
     else:
@@ -188,7 +189,7 @@ async def handler(update):
                     for i in message.document.attributes:
                         try:
                             file_name = i.file_name
-                        except:
+                        except Exception:
                             continue
                     if file_name == '':
                         file_name = f'{message.id} - {caption}.{message.document.mime_type.split("/")[-1]}'
@@ -212,7 +213,7 @@ async def all_chat_download(update):
     if message.media:
         chat_id = update.message.to_id
         entity = await client.get_entity(chat_id)
-        if not entity.id in whitelist:
+        if entity.id not in whitelist:
             return
         chat_title = entity.title
         # 如果是一组媒体
@@ -236,7 +237,7 @@ async def all_chat_download(update):
                 for i in message.document.attributes:
                     try:
                         file_name = i.file_name
-                    except:
+                    except Exception:
                         continue
                 if file_name == '':
                     file_name = f'{message.id} - {caption}.{message.document.mime_type.split("/")[-1]}'
@@ -245,7 +246,7 @@ async def all_chat_download(update):
                     if get_equal_rate(caption, file_name) > 0.6:
                         caption = ""
                     file_name = f'{message.id} - {caption}{file_name}'
-            except:
+            except Exception:
                 print(message.media)
         elif message.photo:
             file_name = f'{message.id} - {caption}{message.photo.id}.jpg'
@@ -265,7 +266,7 @@ if __name__ == '__main__':
         'telegram_channel_downloader', api_id, api_hash).start()
     bot.add_event_handler(handler)
     if donwload_all_chat:
-      client.add_event_handler(all_chat_download)
+        client.add_event_handler(all_chat_download)
     tasks = []
     try:
         for i in range(max_num):

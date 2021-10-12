@@ -1,27 +1,28 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 
+import base64
+import hashlib
+import hmac
+import json
+import os
+import re
 import sys
-import os, re
+import time
+import urllib.parse
+
+import requests
+
 cur_path = os.path.abspath(os.path.dirname(__file__))
 root_path = os.path.split(cur_path)[0]
 sys.path.append(root_path)
-import requests
-import json
-import time
-import hmac
-import hashlib
-import base64
-import urllib.parse
-from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
 
 # 通知服务
 BARK = ''                   # bark服务,自行搜索; secrets可填;
 SCKEY = ''                  # Server酱的SCKEY; secrets可填
 TG_BOT_TOKEN = ''           # tg机器人的TG_BOT_TOKEN; secrets可填1407203283:AAG9rt-6RDaaX0HBLZQq0laNOh898iFYaRQ
 TG_USER_ID = ''             # tg机器人的TG_USER_ID; secrets可填 1434078534
-TG_API_HOST=''              # tg 代理api
+TG_API_HOST = ''              # tg 代理api
 TG_PROXY_IP = ''            # tg机器人的TG_PROXY_IP; secrets可填
 TG_PROXY_PORT = ''          # tg机器人的TG_PROXY_PORT; secrets可填
 DD_BOT_TOKEN = ''           # 钉钉机器人的DD_BOT_TOKEN; secrets可填
@@ -92,6 +93,7 @@ def message(str_msg):
     message_info = "{}\n{}".format(message_info, str_msg)
     sys.stdout.flush()
 
+
 def bark(title, content):
     print("\n")
     if not BARK:
@@ -105,8 +107,9 @@ def bark(title, content):
             print('推送成功！')
         else:
             print('推送失败！')
-    except:
+    except Exception:
         print('推送失败！')
+
 
 def serverJ(title, content):
     print("\n")
@@ -125,6 +128,8 @@ def serverJ(title, content):
         print('推送失败！')
 
 # tg通知
+
+
 def telegram_bot(title, content):
     try:
         print("\n")
@@ -150,7 +155,7 @@ def telegram_bot(title, content):
             proxies = {"http": proxyStr, "https": proxyStr}
         try:
             response = requests.post(url=url, headers=headers, params=payload, proxies=proxies).json()
-        except:
+        except Exception:
             print('推送失败！')
         if response['ok']:
             print('推送成功！')
@@ -158,6 +163,7 @@ def telegram_bot(title, content):
             print('推送失败！')
     except Exception as e:
         print(e)
+
 
 def dingding_bot(title, content):
     timestamp = str(round(time.time() * 1000))  # 时间戳
@@ -179,13 +185,14 @@ def dingding_bot(title, content):
     else:
         print('推送失败！')
 
+
 def coolpush_bot(title, content):
     print("\n")
     if not QQ_SKEY or not QQ_MODE:
         print("qq服务的QQ_SKEY或者QQ_MODE未设置!!\n取消推送")
         return
     print("qq服务启动")
-    url=f"https://qmsg.zendee.cn/{QQ_MODE}/{QQ_SKEY}"
+    url = f"https://qmsg.zendee.cn/{QQ_MODE}/{QQ_SKEY}"
     payload = {'msg': f"{title}\n\n{content}".encode('utf-8')}
     response = requests.post(url=url, params=payload).json()
     if response['code'] == 0:
@@ -193,6 +200,8 @@ def coolpush_bot(title, content):
     else:
         print('推送失败！')
 # push推送
+
+
 def pushplus_bot(title, content):
     try:
         print("\n")
@@ -216,6 +225,8 @@ def pushplus_bot(title, content):
     except Exception as e:
         print(e)
 # 企业微信 APP 推送
+
+
 def wecom_app(title, content):
     try:
         if not QYWX_AM:
@@ -231,7 +242,7 @@ def wecom_app(title, content):
         agentid = QYWX_AM_AY[3]
         try:
             media_id = QYWX_AM_AY[4]
-        except:
+        except Exception:
             media_id = ''
         wx = WeCom(corpid, corpsecret, agentid)
         # 如果没有配置 media_id 默认就以 text 方式发送
@@ -246,6 +257,7 @@ def wecom_app(title, content):
             print('推送失败！错误信息如下：\n', response)
     except Exception as e:
         print(e)
+
 
 class WeCom:
     def __init__(self, corpid, corpsecret, agentid):
@@ -301,6 +313,7 @@ class WeCom:
         respone = requests.post(send_url, send_msges)
         respone = respone.json()
         return respone["errmsg"]
+
 
 def send(title, content):
     """

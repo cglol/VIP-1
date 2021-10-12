@@ -1,10 +1,12 @@
-from telethon import events, Button
-import requests
 import re
 import time
-import qrcode
 from asyncio import exceptions
-from .. import jdbot, chat_id, img_file, mybot, chname
+
+import qrcode
+import requests
+from telethon import Button, events
+
+from .. import chat_id, chname, img_file, jdbot, mybot
 from ..bot.utils import press_event
 
 cookiemsg = ''
@@ -148,7 +150,7 @@ async def my_cookie(event):
                 'source': 'wq_passport'
             }
             check_header = {
-                'Referer': f'https://plogin.m.jd.com/login/login?appid=300&returnurl=https://wqlogin2.jd.com/passport/LoginRedirect?state=%s&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action&source=wq_passport' % check_time_stamp,
+                'Referer': 'https://plogin.m.jd.com/login/login?appid=300&returnurl=https://wqlogin2.jd.com/passport/LoginRedirect?state=%s&returnurl=//home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&/myJd/home.action&source=wq_passport' % check_time_stamp,
                 'Cookie': cookies,
                 'Connection': 'Keep-Alive',
                 'Content-Type': 'application/x-www-form-urlencoded; Charset=UTF-8',

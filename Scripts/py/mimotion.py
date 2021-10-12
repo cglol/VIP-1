@@ -21,13 +21,19 @@ pp                [PushPlus: push_plus_token]
 off               [关闭推送]
 '''
 
-import requests, time, re, json, random, os
+import json
+import os
+import random
+import re
+import time
+
+import requests
 
 now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 headers = {
-        'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 9; MI 6 MIUI/20.6.18)'
-        }
- 
+    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 9; MI 6 MIUI/20.6.18)'
+}
+
 
 # 获取登录 code
 def get_code(location):
@@ -53,7 +59,7 @@ def login(_user, password):
     try:
         location = r1.headers["Location"]
         code = get_code(location)
-    except:
+    except Exception:
         return 0, 0
     # print("access_code获取成功！")
     # print(code)
@@ -124,19 +130,19 @@ def main(_user, _passwd, _step):
     print(result)
     return result
 
- 
+
 # 获取时间戳
 def get_time():
     url = 'http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp'
-    response = requests.get(url,headers=headers).json()
+    response = requests.get(url, headers=headers).json()
     t = response['data']['t']
     return t
 
-  
+
 # 获取app_token
 def get_app_token(login_token):
     url = f"https://account-cn.huami.com/v1/client/app_tokens?app_name=com.xiaomi.hm.health&dn=api-user.huami.com%2Capi-mifit.huami.com%2Capp-analytics.huami.com&login_token={login_token}"
-    response = requests.get(url,headers=headers).json()
+    response = requests.get(url, headers=headers).json()
     app_token = response['token_info']['app_token']
     # print("app_token获取成功！")
     # print(app_token)
@@ -282,7 +288,7 @@ def wxpush(msg, usr, corpid, corpsecret, agentid=1000002):
         send_message(msg, usr)
 
 
-if __name__ ==  "__main__":
+if __name__ == "__main__":
     # Push Mode
     Pm = os.environ.get('PMODE')
     if Pm == 'wx' or Pm == 'nwx':
@@ -320,12 +326,12 @@ if __name__ ==  "__main__":
         step_array = ''
     else:
         step_array = step.split('-')
-        
+
     if len(user_list) == len(passwd_list):
         push = ''
-        for line in range(0,len(user_list)):
+        for line in range(0, len(user_list)):
             if len(step_array) == 2:
-                step = str(random.randint(int(step_array[0]),int(step_array[1])))
+                step = str(random.randint(int(step_array[0]), int(step_array[1])))
                 print(f"已设置为随机步数（{step_array[0]}-{step_array[1]}）")
             elif str(step) == '':
                 step = ''
