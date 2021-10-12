@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## Build 20210906-001
+## Build 20211009-001
 
 ## 导入通用变量与函数
 dir_shell=/ql/shell
@@ -22,7 +22,7 @@ repo=$repo4                                        #默认调用 shufflewzc_fake
 DEBUG="1"
 
 ## 本脚本限制的最大线程数量
-proc_num="7"
+proc_num="8"
 
 ## 备份配置文件开关，默认是1，表示开启；设置为0，表示关闭。备份路径 /ql/config/bak/
 BACKUP="1"
@@ -79,7 +79,7 @@ UpdateType="1"
 ## 定义是否自动安装或修复缺失的依赖，默认为1，表示自动修复；留空或其他数值表示不修复。
 FixDependType="1"
 ## 定义监控修复的依赖名称
-package_name="@types/node axios canvas crypto-js date-fns dotenv fs jsdom png-js require ts-md5 tslib typescript"
+package_name="canvas png-js date-fns axios crypto-js ts-md5 tslib @types/node dotenv typescript fs require tslib jsdom"
 
 ## 需组合的环境变量列表，env_name需要和var_name一一对应，如何有新活动按照格式添加(不懂勿动)
 env_name=(
