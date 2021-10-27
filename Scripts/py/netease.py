@@ -474,7 +474,7 @@ def tasks_pool(infos):
 
 
 def start():
-    if NETEASE_USER and NETEASE_PWD in os.environ:
+    if "NETEASE_USER" and "NETEASE_PWD" in os.environ:
         tasks_pool(get_envs())
     else:
         tasks_pool(get_args())
